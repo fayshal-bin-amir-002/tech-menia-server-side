@@ -80,8 +80,8 @@ async function run() {
 
             const total = await productsCollection.countDocuments(query);
             const result = await productsCollection.find(query).skip(page * 12).limit(12).toArray();
+            
             res.send({result, total});
-
         })
 
         // Send a ping to confirm a successful connection
