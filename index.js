@@ -74,12 +74,12 @@ async function run() {
             const page = parseInt(req.query.page);
             const filterData = JSON.parse(req.query.filterData);
 
-            // console.log(filterData);
+            console.log(filterData.search);
 
             let query = {};
 
             if (filterData.search) {
-                query.search = { $regex: filterData.search, $options: 'i' }
+                query = { productName: { $regex: filterData.search, $options: 'i' } }
             }
 
             if (filterData.brand.length > 0) {
@@ -91,7 +91,7 @@ async function run() {
             }
 
             if (filterData.priceRange.length > 0) {
-                query.price = { $gte: filterData.priceRange[0], $lte: filterData.priceRange[1] };
+                query.price = { $gte: Number(filterData.priceRange[0]), $lte: Number(filterData.priceRange[1]) };
             }
 
             let sortingOptions = {};
