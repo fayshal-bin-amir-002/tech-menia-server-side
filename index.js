@@ -74,8 +74,6 @@ async function run() {
             const page = parseInt(req.query.page);
             const filterData = JSON.parse(req.query.filterData);
 
-            console.log(filterData.search);
-
             let query = {};
 
             if (filterData.search) {
