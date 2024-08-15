@@ -72,15 +72,45 @@ async function run() {
         app.get("/products", async (req, res) => {
 
             const page = parseInt(req.query.page);
-            const search = req.query.search;
-            const brand = req.query.brand;
+            const filterData = JSON.parse(req.query.filterData);
 
-            const query = {
-                productName: { $regex: search, $options: 'i' }
+            // console.log(filterData);
+
+            let query = {};
+
+            if (filterData.search) {
+                query.search = { $regex: filterData.search, $options: 'i' }
             }
 
+            if (filterData.brand.length > 0) {
+                query.brandName = { $in: filterData.brand };
+            }
+
+            if (filterData.category.length > 0) {
+                query.category = { $in: filterData.category };
+            }
+
+            if (filterData.priceRange.length > 0) {
+                query.price = { $gte: filterData.priceRange[0], $lte: filterData.priceRange[1] };
+            }
+
+            let sortingOptions = {};
+
+            if (filterData.priceSorting === 'lth') {
+                sortingOptions.price = 1;
+            } else if (filterData.priceSorting === 'htl') {
+                sortingOptions.price = -1;
+            }
+
+            if (filterData.dateSorting) {
+                sortingOptions.productCreationDate = -1;
+            } else if (filterData.dateSorting === false) {
+                sortingOptions.productCreationDate = 1;
+            }
+
+
             const total = await productsCollection.countDocuments(query);
-            const result = await productsCollection.find(query).skip(page * 12).limit(12).toArray();
+            const result = await productsCollection.find(query).sort(sortingOptions).skip(page * 12).limit(12).toArray();
 
             res.send({ result, total });
         })
