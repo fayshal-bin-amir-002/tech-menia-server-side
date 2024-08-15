@@ -73,6 +73,7 @@ async function run() {
 
             const page = parseInt(req.query.page);
             const search = req.query.search;
+            const brand = req.query.brand;
 
             const query = {
                 productName: { $regex: search, $options: 'i' }
@@ -80,8 +81,22 @@ async function run() {
 
             const total = await productsCollection.countDocuments(query);
             const result = await productsCollection.find(query).skip(page * 12).limit(12).toArray();
-            
-            res.send({result, total});
+
+            res.send({ result, total });
+        })
+
+        //<---api for get all devices brand name and category--->
+        app.get("/filterData", async (req, res) => {
+            const brandNames = await productsCollection.aggregate([
+                { $group: { _id: "$brandName" } }
+            ]).toArray();
+
+            const categories = await productsCollection.aggregate([
+                { $group: { _id: "$category" } }
+            ]).toArray();
+
+            res.send({ brandNames, categories });
+
         })
 
         // Send a ping to confirm a successful connection
