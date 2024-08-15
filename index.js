@@ -32,23 +32,6 @@ async function run() {
         const productsCollection = database.collection("products");
         const usersCollection = database.collection("users");
 
-        //<---middleware for verify token--->
-        const verifyToken = async (req, res, next) => {
-            if (!req.headers.authorization) {
-                return res.status(401).send({ message: "Unauthorized Access" });
-            }
-
-            const token = req.headers.authorization.split(' ')[1];
-
-            jwt.verify(token, secret_access_token, (error, decoded) => {
-                if (error) {
-                    return res.status(401).send({ message: "Unauthorized Access" });
-                }
-                req.decoded = decoded;
-                next();
-            })
-        }
-
         //<---jwt token req--->
         app.post("/jwt", async (req, res) => {
             const user = req.body;
